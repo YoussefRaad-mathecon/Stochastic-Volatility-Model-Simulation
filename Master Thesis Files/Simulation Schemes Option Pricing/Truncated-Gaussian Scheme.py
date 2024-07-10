@@ -19,7 +19,7 @@ N = 10000
 K = 100
 gamma1 = 0.5
 gamma2 = 0.5
-alpha = 5
+alpha = 4.5
 
 kappa_tilde = kappa + lambda_
 theta_tilde = (kappa * theta) / (kappa + lambda_)
@@ -114,14 +114,19 @@ def generateHestonPathTGDisc(S0, v0, r, kappa, theta, sigma, rho, lambda_, T, n)
               (theta_tilde * sigma**2 * (1 - exponent)**2 / (2 * kappa_tilde)))
         psi = s2 / m**2
 
-        nearest_index = find_nearest_index(psi_grid, psi)
-        f_mean = f_mu_grid[nearest_index]
-        f_SD = f_sigma_grid[nearest_index]
-
-        mean = f_mean * m
-        SD = f_SD * np.sqrt(s2)
-        Zv = Zv_array[i - 1]
-        v_next = max((mean + SD * Zv), 0)
+        if 1/np.sqrt(psi)>alpha:
+            mean = m
+            SD = np.sqrt(s2)
+            Zv = Zv_array[i - 1]
+            v_next = max((mean + SD * Zv), 0)
+        else:
+            nearest_index = find_nearest_index(psi_grid, psi)
+            f_mean = f_mu_grid[nearest_index]
+            f_SD = f_sigma_grid[nearest_index]
+            mean = f_mean * m
+            SD = f_SD * np.sqrt(s2)
+            Zv = Zv_array[i - 1]
+            v_next = max((mean + SD * Zv), 0)
 
         if v_next < 0:
             v_zero_count += 1
@@ -169,4 +174,6 @@ for result in results:
     print(f"Computing time: {computing_time} seconds")
     print(f"Zero variance occurrences: {total_v_zero_count}\n")
 print(f"Total computing time: {total_computing_time} seconds")
+
+
 
