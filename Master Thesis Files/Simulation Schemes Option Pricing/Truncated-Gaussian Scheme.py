@@ -1,9 +1,9 @@
 import numpy as np
 from scipy.stats import norm
-import matplotlib.pyplot as plt
 from scipy.optimize import root_scalar
-from scipy.interpolate import interp1d
 import time
+
+np.random.seed(112233)
 
 # Parameters
 S0 = 100
@@ -15,11 +15,11 @@ sigma = 0.3
 rho = -0.5
 lambda_ = 0.01
 T = 1
-N = 1000000
+N = 10000
 K = 100
 gamma1 = 0.5
 gamma2 = 0.5
-alpha = 4
+alpha = 5
 
 kappa_tilde = kappa + lambda_
 theta_tilde = (kappa * theta) / (kappa + lambda_)
@@ -29,7 +29,7 @@ psi_min = 1 / alpha**2
 psi_max = sigma**2 / (2 * kappa_tilde * theta_tilde)
 
 # Create an equidistant grid over the domain
-psi_grid = np.linspace(psi_min, psi_max, 1000)
+psi_grid = np.linspace(psi_min, psi_max, 100)
 
 # Function to find r(psi)
 def find_rr(psi, bracket_width=10):
@@ -47,8 +47,6 @@ def find_rr(psi, bracket_width=10):
     a, b = -bracket_width, bracket_width
     f_a, f_b = equation(a, psi), equation(b, psi)
     while f_a * f_b > 0:
-        a *= 2
-        b *= 2
         f_a, f_b = equation(a, psi), equation(b, psi)
         if abs(a) > 1e6 or abs(b) > 1e6:
             raise ValueError("Could not find a valid bracket for root finding.")
@@ -81,12 +79,12 @@ def f_sigma(psi, rr):
     Phi_r = Phi(rr)
     return (1 / np.sqrt(psi)) / (phi_r + rr * Phi_r)
 
-f_mu_grid = f_mu(psi_grid, r_grid)
-f_sigma_grid = f_sigma(psi_grid, r_grid)
+f_mu_grid = np.array([f_mu(psi, r) for psi, r in zip(psi_grid, r_grid)])
+f_sigma_grid = np.array([f_sigma(psi, r) for psi, r in zip(psi_grid, r_grid)])
 
-# Interpolation functions for f_mu and f_sigma
-f_mu_interp = interp1d(psi_grid, f_mu_grid, kind='linear', fill_value="extrapolate")
-f_sigma_interp = interp1d(psi_grid, f_sigma_grid, kind='linear', fill_value="extrapolate")
+# Function to find the nearest index in the grid
+def find_nearest_index(array, value):
+    return np.abs(array - value).argmin()
 
 def generateHestonPathTGDisc(S0, v0, r, kappa, theta, sigma, rho, lambda_, T, n):
     S = np.zeros(n + 1)
@@ -116,18 +114,14 @@ def generateHestonPathTGDisc(S0, v0, r, kappa, theta, sigma, rho, lambda_, T, n)
               (theta_tilde * sigma**2 * (1 - exponent)**2 / (2 * kappa_tilde)))
         psi = s2 / m**2
 
-        if m / np.sqrt(s2) > 1 / np.sqrt(psi) > alpha:
-            mean = np.sqrt(s2)
-            SD = m
-            Zv = Zv_array[i - 1]
-            v_next = max((mean + SD * Zv), 0)
-        else:
-            f_mean = f_mu_interp(psi)
-            f_SD = f_sigma_interp(psi)
-            mean = f_mean * m
-            SD = f_SD * np.sqrt(s2)
-            Zv = Zv_array[i - 1]
-            v_next = max((mean + SD * Zv), 0)
+        nearest_index = find_nearest_index(psi_grid, psi)
+        f_mean = f_mu_grid[nearest_index]
+        f_SD = f_sigma_grid[nearest_index]
+
+        mean = f_mean * m
+        SD = f_SD * np.sqrt(s2)
+        Zv = Zv_array[i - 1]
+        v_next = max((mean + SD * Zv), 0)
 
         if v_next < 0:
             v_zero_count += 1
@@ -155,10 +149,8 @@ def priceHestonCallViaTGMC(S0, v0, r, kappa, theta, sigma, rho, lambda_, T, n, N
 
     return option_price, std_dev, computing_time, total_v_zero_count, payoffs
 
-# Different time steps
+# Function to profile
 time_steps = [1, 2, 4, 8, 16, 32]
-
-# Store results for each time step
 results = []
 
 for n in time_steps:
@@ -166,37 +158,15 @@ for n in time_steps:
     results.append((T / n, option_price, std_dev, computing_time, total_v_zero_count, payoffs))
 
 # Print results
+print("Results (TG):")
+total_computing_time = 0
 for result in results:
     dt, option_price, std_dev, computing_time, total_v_zero_count, _ = result
+    total_computing_time += computing_time
     print(f"Time step (dt): {dt}")
     print(f"Option price: {option_price}")
     print(f"Standard deviation: {std_dev}")
     print(f"Computing time: {computing_time} seconds")
     print(f"Zero variance occurrences: {total_v_zero_count}\n")
+print(f"Total computing time: {total_computing_time} seconds")
 
-# Plotting the stock paths for the first time step (dt = 1)
-n = time_steps[0]
-paths = []
-for i in range(N):
-    S, _ = generateHestonPathTGDisc(S0, v0, r, kappa, theta, sigma, rho, lambda_, T, n)
-    paths.append(S)
-
-plt.figure(figsize=(14, 6))
-for S in paths:  # Plotting the first 100 paths to avoid clutter
-    plt.plot(S)
-plt.title('Sample Stock Price Paths under the Heston Model (QE)')
-plt.xlim(0, n)
-plt.xlabel('Time Steps')
-plt.ylabel('Stock Prices')
-plt.grid(True)
-plt.show()
-
-# Plot the option prices for the first time step (dt = 1)
-payoffs = results[0][-1]
-plt.figure(figsize=(14, 6))
-plt.plot(payoffs, marker='o', linestyle='-', color='blue')  
-plt.title('Payoffs under the Heston Model (QE)')
-plt.xlabel('Payoff number')
-plt.ylabel('Payoffs')
-plt.grid(True)
-plt.show()
