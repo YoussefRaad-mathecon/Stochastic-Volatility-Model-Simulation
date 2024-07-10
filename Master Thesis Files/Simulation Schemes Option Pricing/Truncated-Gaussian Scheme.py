@@ -15,7 +15,7 @@ sigma = 0.3
 rho = -0.5
 lambda_ = 0.01
 T = 1
-N = 10000
+N = 1000
 K = 100
 gamma1 = 0.5
 gamma2 = 0.5
@@ -174,6 +174,5 @@ for result in results:
     print(f"Computing time: {computing_time} seconds")
     print(f"Zero variance occurrences: {total_v_zero_count}\n")
 print(f"Total computing time: {total_computing_time} seconds")
-
 
 
