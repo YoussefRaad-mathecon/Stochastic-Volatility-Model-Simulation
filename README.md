@@ -8,4 +8,5 @@ The implemented Monte Carlo simulation schemes (so far):
 - Euler
 - Milstein
 - Truncated-Gaussian (TG)
+- Truncated-Gaussian (TG+M)
 - Quadratic-Exponential (QE)
