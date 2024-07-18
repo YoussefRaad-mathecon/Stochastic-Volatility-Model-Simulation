@@ -10,3 +10,4 @@ The implemented Monte Carlo simulation schemes (so far):
 - Truncated-Gaussian (TG)
 - Truncated-Gaussian (TG+M)
 - Quadratic-Exponential (QE)
+- Quadratic-Exponential (QE-M)
