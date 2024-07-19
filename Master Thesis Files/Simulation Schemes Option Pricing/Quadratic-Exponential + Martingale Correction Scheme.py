@@ -27,7 +27,6 @@ def generateHestonPathQEDisc(S0, v0, r, kappa, theta, sigma, rho, lambda_, T, n)
     v = np.zeros(n + 1)
     v[0] = v0
     v_zero_count = 0
-    psi_greater_than_C_count = 0
     dt = T / n
 
     kappa_tilde = kappa + lambda_
@@ -57,19 +56,23 @@ def generateHestonPathQEDisc(S0, v0, r, kappa, theta, sigma, rho, lambda_, T, n)
             Zv = Zv_array[i - 1]
             b2 = (2 / psi) - 1 + np.sqrt(2 / psi) * np.sqrt((2 / psi) - 1)
             a = m / (1 + b2)
-            K0star = -((A * b2 * a) / (1 - 2 * A * a)) + ((1 / 2) * np.log(1 - 2 * A * a)) - (K1 + (1 / 2) * dt * gamma1)
+            if A >= 1 / (2 * a):
+                raise ValueError(f"Stopping condition met: A >= 1/(2*a) at step {i}")
+            K0star = -((A * b2 * a) / (1 - 2 * A * a)) + ((1 / 2) * np.log(1 - 2 * A * a)) -  (K1 + (1 / 2) * K3) * v[i-1]  
 
             v_next = a * (np.sqrt(b2) + Zv)**2
+            
         else:  # psi > C
-            psi_greater_than_C_count += 1
             p = (psi - 1) / (psi + 1)
             beta = (1 - p) / m
-
-            K0star = -np.log((beta * (1 - p)) / (beta - A)) - (K1 + (1 / 2) * dt * gamma1)
+            if A >= beta:
+                raise ValueError(f"Stopping condition met: A >= beta at step {i}")
+            K0star = -np.log(p + ((beta * (1 - p)) / (beta - A))) - (K1 + (1 / 2) * K3) * v[i-1]  
             if (0 <= Uv <= p):
                 v_next = 0
             elif (p < Uv <= 1):
                 v_next = (1 / beta) * np.log((1 - p) / (1 - Uv))
+                
         # Zero variance counter and truncation of v if necessary
         if v_next < 0:
             v_zero_count += 1
@@ -79,35 +82,28 @@ def generateHestonPathQEDisc(S0, v0, r, kappa, theta, sigma, rho, lambda_, T, n)
         Zs = Zs_array[i - 1]
         log_Si = np.log(S[i - 1]) + r * dt + K0star + K1 * v[i - 1] + K2 * v[i] + np.sqrt(K3 * v[i - 1] + K4 * v[i]) * Zs
         S[i] = np.exp(log_Si)  
-        # Debugging prints
-        print(f"Step {i}:")
-        print(f"  v[{i}] = {v[i]}")
-        print(f"  S[{i}] = {S[i]}")
-        print(f"  K0star = {K0star}")
-        print(f"  K1 = {K1}, K2 = {K2}, K3 = {K3}, K4 = {K4}")
+        
 
-    return S, v_zero_count, psi_greater_than_C_count
+
+    return S, v_zero_count
 
 # Function to price a Heston call option using QE Monte Carlo simulation
 def priceHestonCallViaQEMC(S0, v0, r, kappa, theta, sigma, rho, lambda_, T, n, N, K):
     start_time = time.time()
     payoffs = np.zeros(N)
     total_v_zero_count = 0
-    total_psi_greater_than_C_count = 0
 
     for i in range(N):
-        S, v_zero_count, psi_greater_than_C_count = generateHestonPathQEDisc(S0, v0, r, kappa, theta, sigma, rho, lambda_, T, n)
+        S, v_zero_count = generateHestonPathQEDisc(S0, v0, r, kappa, theta, sigma, rho, lambda_, T, n)
         payoffs[i] = max(S[-1] - K, 0)
         total_v_zero_count += v_zero_count
-        total_psi_greater_than_C_count += psi_greater_than_C_count
 
     option_price = np.exp(-r * T) * np.mean(payoffs)
     std_dev = np.std(payoffs) / np.sqrt(N)
     end_time = time.time()
     computing_time = end_time - start_time
 
-    return option_price, std_dev, computing_time, total_v_zero_count, total_psi_greater_than_C_count, payoffs
-
+    return option_price, std_dev, computing_time, total_v_zero_count, payoffs
 
 # Different time steps
 time_steps = [10, 20, 40, 80, 160, 320]
@@ -117,8 +113,8 @@ results = {K: [] for K in K_values}
 
 for K in K_values:
     for n in time_steps:
-        option_price, std_dev, computing_time, total_v_zero_count, total_psi_greater_than_C_count, payoffs = priceHestonCallViaQEMC(S0, v0, r, kappa, theta, sigma, rho, lambda_, T, n, N, K)
-        results[K].append((T/n, option_price, std_dev, computing_time, total_v_zero_count, total_psi_greater_than_C_count, payoffs))
+        option_price, std_dev, computing_time, total_v_zero_count, payoffs = priceHestonCallViaQEMC(S0, v0, r, kappa, theta, sigma, rho, lambda_, T, n, N, K)
+        results[K].append((T/n, option_price, std_dev, computing_time, total_v_zero_count, payoffs))
 
 print("Results (QE+M):")
 # Print results
@@ -126,12 +122,12 @@ total_computing_time = 0
 for K in K_values:
     print(f"Results for K = {K}:")
     for result in results[K]:
-        dt, option_price, std_dev, computing_time, total_v_zero_count, total_psi_greater_than_C_count, _ = result
+        dt, option_price, std_dev, computing_time, total_v_zero_count, _ = result
         total_computing_time += computing_time
         print(f"Time step (dt): {dt}")
         print(f"Option price: {option_price}")
         print(f"Standard deviation: {std_dev}")
         print(f"Computing time: {computing_time} seconds")
         print(f"Zero variance occurrences: {total_v_zero_count}")
-        print(f"Occurrences of psi > C: {total_psi_greater_than_C_count}\n")
 print(f"Total computing time: {total_computing_time} seconds")
+
