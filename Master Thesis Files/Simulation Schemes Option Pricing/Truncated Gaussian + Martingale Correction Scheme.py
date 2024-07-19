@@ -15,7 +15,7 @@ sigma = 1
 rho = -0.9
 lambda_ = 0.01
 T = 10
-N = 100
+N = 10000
 K = 100
 gamma1 = 0.5
 gamma2 = 0.5
@@ -115,7 +115,7 @@ def generateHestonPathTGDisc(S0, v0, r, kappa, theta, sigma, rho, lambda_, T, n)
               (theta_tilde * sigma**2 * (1 - exponent)**2 / (2 * kappa_tilde)))
         psi = s2 / m**2
 
-        if 1/np.sqrt(psi)>alpha:
+        if 1 / np.sqrt(psi) > alpha:
             mean = m
             SD = np.sqrt(s2)
             Zv = Zv_array[i - 1]
