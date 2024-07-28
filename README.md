@@ -12,7 +12,7 @@ The implemented Monte Carlo simulation schemes (so far):
 - Truncated-Gaussian (TG+M)
 - Quadratic-Exponential (QE)
 - Quadratic-Exponential (QE-M)
-  
+- Failed Broadie and Kaya Drift Interpolation
 ### Exact Pricing
 The implemented exact pricing methods:
 - Heston's original
