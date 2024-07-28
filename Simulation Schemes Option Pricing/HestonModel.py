@@ -15,16 +15,16 @@ class HestonModel:
             r (float): Risk-free interest rate.
             kappa (float): Rate of mean reversion of variance.
             theta (float): Long-term variance level.
-            sigma (float): Volatility of volatility.
+            sigma (float): Volatility of variance.
             rho (float): Correlation between asset and variance.
-            lambda_ (float): Jump intensity.
-            gamma1 (float): Mean of jump size.
-            gamma2 (float): Standard deviation of jump size.
+            lambda_ (float): market price of volatility risk.
+            gamma1 (float): Left/right scale of integration.
+            gamma2 (float): Left/right scale of integration.
             alpha (float): Scaling parameter.
 
         Attributes:
-            kappa_tilde (float): Adjusted rate of mean reversion considering jumps.
-            theta_tilde (float): Adjusted long-term variance level considering jumps.
+            kappa_tilde (float): Adjusted rate of mean reversion.
+            theta_tilde (float): Adjusted long-term variance level.
             psi_min (float): Minimum value of psi in the grid.
             psi_max (float): Maximum value of psi in the grid.
             psi_grid (np.ndarray): Grid of psi values.
