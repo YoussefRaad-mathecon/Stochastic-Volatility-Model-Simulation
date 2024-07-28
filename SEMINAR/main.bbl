@@ -1,0 +1,66 @@
+\begin{thebibliography}{10}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Albrecher et~al.(2006)Albrecher, Mayer, Schoutens, and
+  Tistaert]{Albrecher2006LittleHeston}
+H.~Albrecher, P.~A. Mayer, W.~Schoutens, and J.~Tistaert.
+\newblock The little heston trap.
+\newblock \emph{Wilmott}, pages 83--92, January 2006.
+
+\bibitem[Andersen(2007)]{andersen2007efficient}
+L.~B. Andersen.
+\newblock Efficient simulation of the heston stochastic volatility model.
+\newblock \emph{Available at SSRN 946405}, 2007.
+
+\bibitem[Cox et~al.(1985)Cox, Ingersoll, and Ross]{cox1985theory}
+J.~C. Cox, J.~E. Ingersoll, and S.~A. Ross.
+\newblock A theory of the term structure of interest rates.
+\newblock \emph{Econometrica}, 53\penalty0 (2):\penalty0 385--407, 1985.
+
+\bibitem[Feller(1951)]{feller1951two}
+W.~Feller.
+\newblock Two singular diffusion problems.
+\newblock \emph{Annals of mathematics}, 54\penalty0 (1):\penalty0 173--182,
+  1951.
+
+\bibitem[Gatheral(2011)]{gatheral2011volatility}
+J.~Gatheral.
+\newblock \emph{The volatility surface: a practitioner's guide}.
+\newblock John Wiley \& Sons, 2011.
+
+\bibitem[Heston(1993)]{heston1993closed}
+S.~L. Heston.
+\newblock A closed-form solution for options with stochastic volatility with
+  applications to bond and currency options.
+\newblock \emph{The review of financial studies}, 6\penalty0 (2):\penalty0
+  327--343, 1993.
+
+\bibitem[Johnson et~al.(1995)Johnson, Kotz, and
+  Balakrishnan]{johnson1995continuous}
+N.~L. Johnson, S.~Kotz, and N.~Balakrishnan.
+\newblock \emph{Continuous univariate distributions, volume 2}, volume 289.
+\newblock John wiley \& sons, 1995.
+
+\bibitem[Kendall and Stuart(1977)]{kendall1977advanced}
+M.~Kendall and A.~Stuart.
+\newblock \emph{The Advanced Theory of Statistics}, volume~1.
+\newblock Macmillan, New York, 1977.
+
+\bibitem[Mandelbrot(1963)]{Mandelbrot1963}
+B.~B. Mandelbrot.
+\newblock The variation of certain speculative prices.
+\newblock \emph{The Journal of Business}, 36\penalty0 (4):\penalty0 394--419,
+  1963.
+
+\bibitem[Van~Haastrecht and Pelsser(2010)]{van2010efficient}
+A.~Van~Haastrecht and A.~Pelsser.
+\newblock Efficient, almost exact simulation of the heston stochastic
+  volatility model.
+\newblock \emph{International Journal of Theoretical and Applied Finance},
+  13\penalty0 (01):\penalty0 1--43, 2010.
+
+\end{thebibliography}
