@@ -14,7 +14,7 @@ The implemented Monte Carlo simulation schemes (so far):
 - Quadratic-Exponential (QE-M)
 - Failed Broadie and Kaya Drift Interpolation
 ### Exact Pricing
-The implemented exact pricing methods:
-- Heston's original
-- Heston's stable Original
+The implemented exact pricing 
+- Heston's Original
+- Heston's (Stable) Original
 - Carr-Madan.
