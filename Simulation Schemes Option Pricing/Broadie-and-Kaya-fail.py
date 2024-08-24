@@ -1,5 +1,21 @@
 import numpy as np
 from scipy.stats import chi2, norm, poisson
+np.random.seed(112233)
+
+# Given parameters
+S_u = 100
+V_u = 0.06
+r = 0.05
+kappa = 0.1
+theta = 0.06
+sigma_v = 0.5
+rho = -0.5
+lambdaa = 0.01
+t = 1
+u = 0
+N = 100000
+K = 100
+
 
 def generateHestonPathBDDisc(S_u, V_u, sigma_v, kappa, theta, rho, r, t, K, N):
     d = 4 * theta * kappa / sigma_v**2
@@ -29,17 +45,3 @@ def generateHestonPathBDDisc(S_u, V_u, sigma_v, kappa, theta, rho, r, t, K, N):
     
     return option_price
 
-sigma_v = 1.0  # Volatility of variance
-kappa = 0.5    # Mean reversion speed
-theta = 0.04   # Long-term mean
-rho = -0.9     # Correlation
-r = 0.05       # Risk-free rate
-S_u = 100.0    # Initial stock price
-V_u = 0.04     # Initial variance
-u = 0.0        # Starting time
-t = 10.0       # End time
-N = 1000       # Number of samples
-K = 100        # Strike price
-
-price = generateHestonPathBDDisc(S_u, V_u, sigma_v, kappa, theta, rho, r, t, K, N)
-print(f"The European call option price is: {price:.2f}")
