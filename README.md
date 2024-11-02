@@ -9,10 +9,10 @@ The implemented Monte Carlo simulation schemes (so far):
 - Euler
 - Milstein
 - Truncated-Gaussian (TG)
-- Truncated-Gaussian (TG+M)
+- Truncated-Gaussian: Martingale-corrected (TG+M)
 - Quadratic-Exponential (QE)
-- Quadratic-Exponential (QE-M)
-- Failed Broadie and Kaya Drift Interpolation
+- Quadratic-Exponential: Martingale-corrected (QE-M)
+- Broadie and Kaya Drift Interpolation
 ### Exact Pricing
 The implemented exact pricing 
 - Heston's Original
