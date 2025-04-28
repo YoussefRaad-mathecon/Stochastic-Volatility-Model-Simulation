@@ -1,4 +1,4 @@
-# Stochastiv Volatility Model Option Pricing
+# Stochastic Volatility Model Option Pricing
 This repository contains my code for simulation of asset prices under the Heston model and other numerical approximations. The code is mostly avaliable in python.
 
 ## HestonModel.py class
